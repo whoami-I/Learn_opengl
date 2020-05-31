@@ -13,9 +13,10 @@ public class Triangle implements Shape {
     private int colorHandle;
 
     private final String vertexShaderCode =
-            "attribute vec4 vPosition;" +
+            "attribute vec4 vPosition;\n" +
+                    "uniform mat4 projectMatrix;\n" +
                     "void main() {" +
-                    "  gl_Position = vPosition;" +
+                    "  gl_Position = projectMatrix * vPosition;" +
                     "}";
 
     private final String fragmentShaderCode =
@@ -34,9 +35,9 @@ public class Triangle implements Shape {
     // number of coordinates per vertex in this array
     static final int COORDS_PER_VERTEX = 3;
     static float triangleCoords[] = {   // in counterclockwise order:
-            0.0f, 0.622008459f, 0.0f, // top
-            -0.5f, -0.311004243f, 0.0f, // bottom left
-            0.5f, -0.311004243f, 0.0f  // bottom right
+            0.0f, 1.0f, 0.0f, // top
+            -1.0f, -1.0f, 0.0f, // bottom left
+            1.0f, -1.0f, 0.0f  // bottom right
     };
 
     // Set color with red, green, blue and alpha (opacity) values
@@ -73,13 +74,15 @@ public class Triangle implements Shape {
 
         // creates OpenGL ES program executables
         GLES20.glLinkProgram(mProgram);
+
+        // Add program to OpenGL ES environment
+        GLES20.glUseProgram(mProgram);
     }
+    int projectMatrixIndex;
 
 
     @Override
     public void draw() {
-        // Add program to OpenGL ES environment
-        GLES20.glUseProgram(mProgram);
 
         // get handle to vertex shader's vPosition member
         positionHandle = GLES20.glGetAttribLocation(mProgram, "vPosition");
@@ -98,10 +101,14 @@ public class Triangle implements Shape {
         // Set color for drawing the triangle
         GLES20.glUniform4fv(colorHandle, 1, color, 0);
 
+        projectMatrixIndex = GLES20.glGetAttribLocation(mProgram, "projectMatrix");
+
         // Draw the triangle
         GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, vertexCount);
+    }
 
-        // Disable vertex array
-        GLES20.glDisableVertexAttribArray(positionHandle);
+    @Override
+    public void setUpProjectMatrix(float[] projectMatrix) {
+        GLES20.glUniformMatrix4fv(projectMatrixIndex, 1, false, projectMatrix, 0);
     }
 }

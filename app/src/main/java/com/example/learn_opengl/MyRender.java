@@ -37,7 +37,7 @@ public class MyRender implements GLSurfaceView.Renderer {
         GLES20.glViewport(0, 0, width, height);
         ratio = ((float) height) / width;
         Matrix.orthoM(mProjectionMatrix, 0, -1, 1,
-                -ratio, ratio, -1, 1);
+                -ratio, ratio, 0, 1);
         shape.setUpProjectMatrix(mProjectionMatrix);
     }
 

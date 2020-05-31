@@ -15,15 +15,19 @@ public class Triangle implements Shape {
     private final String vertexShaderCode =
             "attribute vec4 vPosition;\n" +
                     "uniform mat4 projectMatrix;\n" +
+                    "attribute vec4 a_color;\n" +
+                    "varying vec4 v_color;\n" +
                     "void main() {" +
+                    "  v_color = a_color;" +
                     "  gl_Position = projectMatrix * vPosition;" +
                     "}";
 
     private final String fragmentShaderCode =
             "precision mediump float;" +
                     "uniform vec4 vColor;" +
+                    "varying vec4 v_color;\n" +
                     "void main() {" +
-                    "  gl_FragColor = vColor;" +
+                    "  gl_FragColor = v_color;" +
                     "}";
 
 
@@ -31,6 +35,7 @@ public class Triangle implements Shape {
     private final int vertexStride = COORDS_PER_VERTEX * 4; // 4 bytes per vertex
 
     private FloatBuffer vertexBuffer;
+    private FloatBuffer colorBuffer;
 
     // number of coordinates per vertex in this array
     static final int COORDS_PER_VERTEX = 3;
@@ -41,7 +46,11 @@ public class Triangle implements Shape {
     };
 
     // Set color with red, green, blue and alpha (opacity) values
-    float color[] = {0.63671875f, 0.76953125f, 0.22265625f, 1.0f};
+    float color[] = {
+            1, 0, 0, 1.0f,
+            0, 1, 0, 1.0f,
+            0, 0, 1, 1.0f,
+    };
 
     public Triangle() {
         // initialize vertex byte buffer for shape coordinates
@@ -57,6 +66,22 @@ public class Triangle implements Shape {
         vertexBuffer.put(triangleCoords);
         // set the buffer to read the first coordinate
         vertexBuffer.position(0);
+
+
+
+        bb = ByteBuffer.allocateDirect(
+                // (number of coordinate values * 4 bytes per float)
+                color.length * 4);
+        // use the device hardware's native byte order
+        bb.order(ByteOrder.nativeOrder());
+
+        // create a floating point buffer from the ByteBuffer
+        colorBuffer = bb.asFloatBuffer();
+        // add the coordinates to the FloatBuffer
+        colorBuffer.put(color);
+        // set the buffer to read the first coordinate
+        colorBuffer.position(0);
+
 
         int vertexShader = MyRender.loadShader(GLES20.GL_VERTEX_SHADER,
                 vertexShaderCode);
@@ -95,11 +120,11 @@ public class Triangle implements Shape {
                 GLES20.GL_FLOAT, false,
                 vertexStride, vertexBuffer);
 
-        // get handle to fragment shader's vColor member
-        colorHandle = GLES20.glGetUniformLocation(mProgram, "vColor");
-
-        // Set color for drawing the triangle
-        GLES20.glUniform4fv(colorHandle, 1, color, 0);
+        int colorHandle = GLES20.glGetAttribLocation(mProgram, "a_color");
+        GLES20.glEnableVertexAttribArray(colorHandle);
+        GLES20.glVertexAttribPointer(colorHandle, COORDS_PER_VERTEX,
+                GLES20.GL_FLOAT, false,
+                4*4, colorBuffer);
 
         projectMatrixIndex = GLES20.glGetAttribLocation(mProgram, "projectMatrix");
 

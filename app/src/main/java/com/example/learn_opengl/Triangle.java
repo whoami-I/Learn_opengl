@@ -53,64 +53,20 @@ public class Triangle implements Shape {
     };
 
     public Triangle() {
-        // initialize vertex byte buffer for shape coordinates
-        ByteBuffer bb = ByteBuffer.allocateDirect(
-                // (number of coordinate values * 4 bytes per float)
-                triangleCoords.length * 4);
-        // use the device hardware's native byte order
-        bb.order(ByteOrder.nativeOrder());
+        vertexBuffer = GLHelper.createFloatBuffer(triangleCoords);
 
-        // create a floating point buffer from the ByteBuffer
-        vertexBuffer = bb.asFloatBuffer();
-        // add the coordinates to the FloatBuffer
-        vertexBuffer.put(triangleCoords);
-        // set the buffer to read the first coordinate
-        vertexBuffer.position(0);
+        colorBuffer = GLHelper.createFloatBuffer(color);
 
-
-
-        bb = ByteBuffer.allocateDirect(
-                // (number of coordinate values * 4 bytes per float)
-                color.length * 4);
-        // use the device hardware's native byte order
-        bb.order(ByteOrder.nativeOrder());
-
-        // create a floating point buffer from the ByteBuffer
-        colorBuffer = bb.asFloatBuffer();
-        // add the coordinates to the FloatBuffer
-        colorBuffer.put(color);
-        // set the buffer to read the first coordinate
-        colorBuffer.position(0);
-
-
-        int vertexShader = MyRender.loadShader(GLES20.GL_VERTEX_SHADER,
-                vertexShaderCode);
-        int fragmentShader = MyRender.loadShader(GLES20.GL_FRAGMENT_SHADER,
-                fragmentShaderCode);
-
-        // create empty OpenGL ES Program
-        mProgram = GLES20.glCreateProgram();
-
-        // add the vertex shader to program
-        GLES20.glAttachShader(mProgram, vertexShader);
-
-        // add the fragment shader to program
-        GLES20.glAttachShader(mProgram, fragmentShader);
-
-        // creates OpenGL ES program executables
-        GLES20.glLinkProgram(mProgram);
-
-        // Add program to OpenGL ES environment
-        GLES20.glUseProgram(mProgram);
+        mProgram = GLHelper.makeProgram(vertexShaderCode, fragmentShaderCode);
     }
-    int projectMatrixIndex;
 
+    int projectMatrixIndex;
 
     @Override
     public void draw() {
 
         // get handle to vertex shader's vPosition member
-        positionHandle = GLES20.glGetAttribLocation(mProgram, "vPosition");
+        positionHandle = GLHelper.getAttr(mProgram, "vPosition");
 
         // Enable a handle to the triangle vertices
         GLES20.glEnableVertexAttribArray(positionHandle);
@@ -120,13 +76,13 @@ public class Triangle implements Shape {
                 GLES20.GL_FLOAT, false,
                 vertexStride, vertexBuffer);
 
-        int colorHandle = GLES20.glGetAttribLocation(mProgram, "a_color");
+        int colorHandle = GLHelper.getAttr(mProgram, "a_color");
         GLES20.glEnableVertexAttribArray(colorHandle);
         GLES20.glVertexAttribPointer(colorHandle, COORDS_PER_VERTEX,
                 GLES20.GL_FLOAT, false,
-                4*4, colorBuffer);
+                4 * 4, colorBuffer);
 
-        projectMatrixIndex = GLES20.glGetAttribLocation(mProgram, "projectMatrix");
+        projectMatrixIndex = GLHelper.getAttr(mProgram, "projectMatrix");
 
         // Draw the triangle
         GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, vertexCount);

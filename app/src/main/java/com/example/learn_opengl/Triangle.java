@@ -1,5 +1,6 @@
 package com.example.learn_opengl;
 
+import android.content.Context;
 import android.opengl.GLES20;
 
 import java.nio.ByteBuffer;
@@ -17,8 +18,10 @@ public class Triangle implements Shape {
                     "uniform mat4 projectMatrix;\n" +
                     "attribute vec4 a_color;\n" +
                     "varying vec4 v_color;\n" +
+                    "attribute vec2 a_TexCoord;\n"+
+                    "varying vec2 v_TexCoord;\n"+
                     "void main() {" +
-                    "  v_color = a_color;" +
+                    "  v_TexCoord = a_TexCoord;" +
                     "  gl_Position = projectMatrix * vPosition;" +
                     "}";
 
@@ -26,8 +29,10 @@ public class Triangle implements Shape {
             "precision mediump float;" +
                     "uniform vec4 vColor;" +
                     "varying vec4 v_color;\n" +
+                    "varying vec2 v_TexCoord;\n"+
+                    "uniform sampler2D u_TextureUnit;\n"+
                     "void main() {" +
-                    "  gl_FragColor = v_color;" +
+                    "  gl_FragColor = texture2D(u_TextureUnit, v_TexCoord);" +
                     "}";
 
 
@@ -52,14 +57,27 @@ public class Triangle implements Shape {
             0, 0, 1, 1.0f,
     };
 
-    public Triangle() {
+    float [] texture_pos={
+            0,1,0,0,1,0,1,1
+    };
+    public Triangle(Context context) {
         vertexBuffer = GLHelper.createFloatBuffer(triangleCoords);
 
         colorBuffer = GLHelper.createFloatBuffer(color);
 
+        FloatBuffer texture_buffer = GLHelper.createFloatBuffer(texture_pos);
         mProgram = GLHelper.makeProgram(vertexShaderCode, fragmentShaderCode);
+        int aTexCoordLocation = GLHelper.getAttr(mProgram,"a_TexCoord");
+        uTextureUnitLocation = GLHelper.getUniform(mProgram,"u_TextureUnit");
+        GLES20.glVertexAttribPointer(aTexCoordLocation, 2, GLES20.GL_FLOAT, false, 2*4, texture_buffer);
+        GLES20.glEnableVertexAttribArray(aTexCoordLocation);
+        textureBean = GLHelper.loadTexture(context, R.drawable.pikachu);
+        // 开启纹理透明混合，这样才能绘制透明图片
+        GLES20.glEnable(GLES20.GL_BLEND);
+        GLES20.glBlendFunc(GLES20.GL_ONE, GLES20.GL_ONE_MINUS_SRC_ALPHA);
     }
-
+    GLHelper.TextureBean textureBean;
+    int uTextureUnitLocation;
     int projectMatrixIndex;
 
     @Override
@@ -84,8 +102,12 @@ public class Triangle implements Shape {
 
         projectMatrixIndex = GLHelper.getAttr(mProgram, "projectMatrix");
 
+        GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D,textureBean.textureId);
+        GLES20.glUniform1i(uTextureUnitLocation, 0);
+
         // Draw the triangle
-        GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, vertexCount);
+        GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, vertexCount);
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.example.learn_opengl;
 
+import android.content.Context;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
@@ -9,6 +10,7 @@ import javax.microedition.khronos.opengles.GL10;
 
 public class MyRender implements GLSurfaceView.Renderer {
 
+    private Context mContext;
     private Shape shape;
     private float ratio;
     private final float[] mProjectionMatrix = new float[]{
@@ -18,7 +20,8 @@ public class MyRender implements GLSurfaceView.Renderer {
             0, 0, 0, 1,
     };
 
-    public MyRender() {
+    public MyRender(Context context) {
+        mContext = context;
     }
 
     public MyRender(Shape shape) {
@@ -28,7 +31,7 @@ public class MyRender implements GLSurfaceView.Renderer {
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
         GLES20.glClearColor(0, 0, 0, 1);
-        shape = new Triangle();
+        shape = new Triangle(mContext);
         shape.setUpProjectMatrix(mProjectionMatrix);
     }
 

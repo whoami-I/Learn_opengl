@@ -9,7 +9,6 @@ import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 
 
-
 public class Triangle implements Shape {
 
     private int mProgram;
@@ -21,8 +20,8 @@ public class Triangle implements Shape {
                     "uniform mat4 projectMatrix;\n" +
                     "attribute vec4 a_color;\n" +
                     "varying vec4 v_color;\n" +
-                    "attribute vec2 a_TexCoord;\n"+
-                    "varying vec2 v_TexCoord;\n"+
+                    "attribute vec2 a_TexCoord;\n" +
+                    "varying vec2 v_TexCoord;\n" +
                     "void main() {" +
                     "  v_TexCoord = vec2(a_TexCoord.x, 1. -a_TexCoord.y);" +
                     "  v_color = a_color;" +
@@ -33,8 +32,8 @@ public class Triangle implements Shape {
             "precision mediump float;" +
                     "uniform vec4 vColor;" +
                     "varying vec4 v_color;\n" +
-                    "varying vec2 v_TexCoord;\n"+
-                    "uniform sampler2D u_TextureUnit;\n"+
+                    "varying vec2 v_TexCoord;\n" +
+                    "uniform sampler2D u_TextureUnit;\n" +
                     "void main() {" +
                     "  gl_FragColor = texture2D(u_TextureUnit, v_TexCoord);" +
                     //"  gl_FragColor = v_color;" +
@@ -57,8 +56,7 @@ public class Triangle implements Shape {
 //    };
 
     static float triangleCoords[] = {   // in counterclockwise order:
-            //-1,-1,1,-1,-1,1,1,1
-            -1,1,-1,-1,1,-1,1,1
+            0, 1, -1, -1, 1, -1
     };
 
     // Set color with red, green, blue and alpha (opacity) values
@@ -68,10 +66,10 @@ public class Triangle implements Shape {
             0, 0, 1, 1.0f,
     };
 
-    float [] texture_pos={
-            0f, 1f, 0f, 0f, 1f, 0f, 1f, 1f
-            //0,0,1,0,0,1,1,1
+    float[] texture_pos = {
+            0.5f, 1, 0, 0, 1, 0
     };
+
     public Triangle(Context context) {
         mProgram = GLHelper.makeProgram(vertexShaderCode, fragmentShaderCode);
 
@@ -91,9 +89,9 @@ public class Triangle implements Shape {
                 4 * 4, colorBuffer);
 
         FloatBuffer texture_buffer = GLHelper.createFloatBuffer(texture_pos);
-        int aTexCoordLocation = GLHelper.getAttr(mProgram,"a_TexCoord");
-        uTextureUnitLocation = GLHelper.getUniform(mProgram,"u_TextureUnit");
-        GLES20.glVertexAttribPointer(aTexCoordLocation, 2, GLES20.GL_FLOAT, false, 2*4, texture_buffer);
+        int aTexCoordLocation = GLHelper.getAttr(mProgram, "a_TexCoord");
+        uTextureUnitLocation = GLHelper.getUniform(mProgram, "u_TextureUnit");
+        GLES20.glVertexAttribPointer(aTexCoordLocation, 2, GLES20.GL_FLOAT, false, 2 * 4, texture_buffer);
         GLES20.glEnableVertexAttribArray(aTexCoordLocation);
         textureBean = GLHelper.loadTexture(context, R.drawable.pikachu);
 //        // 开启纹理透明混合，这样才能绘制透明图片
@@ -116,7 +114,7 @@ public class Triangle implements Shape {
         projectMatrixIndex = GLHelper.getAttr(mProgram, "projectMatrix");
 
         GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
-        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D,textureBean.textureId);
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureBean.textureId);
         GLES20.glUniform1i(uTextureUnitLocation, 0);
 
         // Draw the triangle

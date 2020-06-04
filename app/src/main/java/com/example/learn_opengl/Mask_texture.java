@@ -33,13 +33,9 @@ public class Mask_texture implements Shape {
                     "uniform sampler2D u_TextureUnit;\n" +
                     "uniform sampler2D u_TextureUnit1;\n" +
                     "void main() {" +
-                        "vec4 texture = texture2D(u_TextureUnit, v_TexCoord);"+
-                        "vec4 texture1 = texture2D(u_TextureUnit1, v_TexCoord);"+
-                        "if(texture.r < 0.8f){" +
-                        "  gl_FragColor = texture;" +
-                        "}else{" +
-                        "   gl_FragColor = texture1;" +
-                        "}"+
+                    "vec4 texture = texture2D(u_TextureUnit, v_TexCoord);" +
+                    "vec4 texture1 = texture2D(u_TextureUnit1, v_TexCoord);" +
+                    "gl_FragColor = texture1*0.5f+texture*0.5f;" +
                     "}";
 
     float vertex1[] = {   // in counterclockwise order:

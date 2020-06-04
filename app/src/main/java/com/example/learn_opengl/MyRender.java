@@ -31,7 +31,7 @@ public class MyRender implements GLSurfaceView.Renderer {
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
         GLES20.glClearColor(0, 0, 0, 1);
-        shape = new Triangle(mContext);
+        shape = new Mask_texture(mContext);
         shape.setUpProjectMatrix(mProjectionMatrix);
     }
 

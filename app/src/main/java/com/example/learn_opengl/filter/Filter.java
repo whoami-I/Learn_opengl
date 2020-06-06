@@ -82,7 +82,7 @@ public class Filter implements Shape {
     private BaseFilter baseFilter;
 
     public Filter(Context context) {
-        baseFilter = new CrossFilter();
+        baseFilter = new CopyFilter();
         if (baseFilter.getFragmentShaderCoder() != null) {
             mProgram = GLHelper.makeProgram(vertexShaderCode, baseFilter.getFragmentShaderCoder());
         } else {

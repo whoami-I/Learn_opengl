@@ -67,17 +67,17 @@ public class GLHelper {
         return program;
     }
 
-    static class TextureBean {
-        int textureId;
-        int width;
-        int height;
+    public static class TextureBean {
+        public int textureId;
+        public int width;
+        public int height;
     }
 
-    public static TextureBean loadTexture(Context context,int resourceId){
+    public static TextureBean loadTexture(Context context, int resourceId) {
         TextureBean textureBean = new TextureBean();
-        int [] textId=new int[1];
+        int[] textId = new int[1];
         //1.生成texture对象
-        GLES20.glGenTextures(1,textId,0);
+        GLES20.glGenTextures(1, textId, 0);
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inScaled = false;
 
@@ -85,7 +85,7 @@ public class GLHelper {
                 context.getResources(), resourceId, options);
 
         if (bitmap == null) {
-                Log.w(TAG, "Resource ID $resourceId could not be decoded.");
+            Log.w(TAG, "Resource ID $resourceId could not be decoded.");
             // 加载Bitmap资源失败，删除纹理Id
             GLES20.glDeleteTextures(1, textId, 0);
             return textureBean;

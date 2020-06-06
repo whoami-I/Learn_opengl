@@ -5,6 +5,8 @@ import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
 
+import com.example.learn_opengl.filter.Filter;
+
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
@@ -31,8 +33,9 @@ public class MyRender implements GLSurfaceView.Renderer {
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
         GLES20.glClearColor(0, 0, 0, 1);
-        shape = new FBO(mContext);
+        shape = new Filter(mContext);
         shape.setUpProjectMatrix(mProjectionMatrix);
+        shape.onCreate();
     }
 
     @Override
@@ -42,6 +45,7 @@ public class MyRender implements GLSurfaceView.Renderer {
         Matrix.orthoM(mProjectionMatrix, 0, -1, 1,
                 -ratio, ratio, 0, 1);
         shape.setUpProjectMatrix(mProjectionMatrix);
+        shape.onSizeChange(width,height);
     }
 
     @Override

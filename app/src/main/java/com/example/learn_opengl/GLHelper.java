@@ -100,6 +100,7 @@ public class GLHelper {
         GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_REPEAT);
         // 4. 通过OpenGL对象读取Bitmap数据，并且绑定到纹理对象上，之后就可以回收Bitmap对象
         GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bitmap, 0);
+        //GLES20.glTexImage2D(GLES20.GL_TEXTURE_2D,0,-1,);
         // 5. 生成Mip位图
         GLES20.glGenerateMipmap(GLES20.GL_TEXTURE_2D);
 

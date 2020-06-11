@@ -18,7 +18,7 @@ public class MainActivity extends AppCompatActivity {
         glSurfaceView = findViewById(R.id.surface_view);
         glSurfaceView.setEGLContextClientVersion(2);
         glSurfaceView.setRenderer(new MyRender(getApplicationContext()));
-        glSurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
+        glSurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
     }
 
     @Override

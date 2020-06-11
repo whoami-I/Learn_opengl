@@ -33,7 +33,7 @@ public class MyRender implements GLSurfaceView.Renderer {
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
         GLES20.glClearColor(0, 0, 0, 1);
-        shape = new FBO(mContext);
+        shape = new Coordinate(mContext);
         shape.setUpProjectMatrix(mProjectionMatrix);
         shape.onCreate();
     }
@@ -44,6 +44,7 @@ public class MyRender implements GLSurfaceView.Renderer {
         ratio = ((float) height) / width;
         Matrix.orthoM(mProjectionMatrix, 0, -1, 1,
                 -ratio, ratio, 0, 1);
+//        Matrix.perspectiveM(mProjectionMatrix,0,45,ratio,0.1f,100.0f);
         shape.setUpProjectMatrix(mProjectionMatrix);
         shape.onSizeChange(width,height);
     }

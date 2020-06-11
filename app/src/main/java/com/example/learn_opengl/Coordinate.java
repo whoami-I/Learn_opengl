@@ -2,6 +2,7 @@ package com.example.learn_opengl;
 
 import android.content.Context;
 import android.opengl.GLES20;
+import android.opengl.Matrix;
 
 import java.nio.FloatBuffer;
 
@@ -15,7 +16,8 @@ public class Coordinate implements Shape {
     private final String vertexShaderCode =
             "attribute vec4 vPosition;\n" +
                     "uniform mat4 projectMatrix;\n" +
-
+                    "uniform mat4 modelMatrix;\n" +
+                    "uniform mat4 viewMatrix;\n" +
                     "attribute vec4 a_color;\n" +
                     "varying vec4 v_color;\n" +
                     "attribute vec2 a_TexCoord;\n" +
@@ -23,7 +25,7 @@ public class Coordinate implements Shape {
                     "void main() {" +
                     "  v_TexCoord = vec2(a_TexCoord.x, 1. -a_TexCoord.y);" +
                     "  v_color = a_color;" +
-                    "  gl_Position = projectMatrix * vPosition;" +
+                    "  gl_Position = projectMatrix*viewMatrix*modelMatrix * vPosition;" +
                     "}";
 
     private final String fragmentShaderCode =
@@ -81,7 +83,8 @@ public class Coordinate implements Shape {
     public Coordinate(Context context) {
         mProgram = GLHelper.makeProgram(vertexShaderCode, fragmentShaderCode);
 
-
+        GLES20.glEnable(GLES20.GL_DEPTH_TEST);
+        GLES20.glClearDepthf(1.0f);
         vertexBuffer = GLHelper.createFloatBuffer(vertex1);
         vertexBuffer2 = GLHelper.createFloatBuffer(vertex2);
         positionHandle = GLHelper.getAttr(mProgram, "vPosition");
@@ -106,14 +109,52 @@ public class Coordinate implements Shape {
         textureBean = GLHelper.loadTexture(context, R.drawable.pikachu);
         textureBean2 = GLHelper.loadTexture(context, R.drawable.tuzki);
 //        // 开启纹理透明混合，这样才能绘制透明图片
+
+        projectMatrixIndex = GLHelper.getUniform(mProgram, "projectMatrix");
+        modelMatrixIndex = GLHelper.getUniform(mProgram, "modelMatrix");
+        viewMatrixIndex = GLHelper.getUniform(mProgram, "viewMatrix");
+        float[] modelMatrix = new float[]{
+                1, 0, 0, 0,
+                0, 1, 0, 0,
+                0, 0, 1, 0,
+                0, 0, 0, 1,
+        };
+        Matrix.rotateM(modelMatrix, 0, 180.0f, 1.0f, 0.0f, 0.0f);
+//        Matrix.translateM(modelMatrix,0,0.2f,0.2f,0);
+//        Matrix.scaleM(modelMatrix,0,2,2,2);
+        GLES20.glUniformMatrix4fv(modelMatrixIndex, 1, false, modelMatrix, 0);
+
+        float[] viewMatrix = new float[]{
+                1, 0, 0, 0,
+                0, 1, 0, 0,
+                0, 0, 1, 0,
+                0, 0, 0, 1,
+        };
+        GLES20.glUniformMatrix4fv(viewMatrixIndex, 1, false, viewMatrix, 0);
     }
 
+    @Override
+    public void onSizeChange(int width, int height) {
+        float[] projectMatrix = new float[]{
+                1, 0, 0, 0,
+                0, 1, 0, 0,
+                0, 0, 1, 0,
+                0, 0, 0, 1,
+        };
+        float ratio = ((float) height) / width;
+        Matrix.orthoM(projectMatrix, 0, -1, 1,
+                -ratio, ratio, -1.0f, 1.0f);
+//        Matrix.perspectiveM(projectMatrix,0,45.0f,ratio,0.1f,100.0f);
+        GLES20.glUniformMatrix4fv(projectMatrixIndex, 1, false, projectMatrix, 0);
+    }
 
     GLHelper.TextureBean textureBean;
     GLHelper.TextureBean textureBean2;
     int uTextureUnitLocation;
     int uTextureUnitLocation1;
     int projectMatrixIndex;
+    int modelMatrixIndex;
+    int viewMatrixIndex;
 
     @Override
     public void draw() {
@@ -124,8 +165,8 @@ public class Coordinate implements Shape {
 //                GLES20.GL_FLOAT, false,
 //                4 * 4, colorBuffer);
 
-        projectMatrixIndex = GLHelper.getAttr(mProgram, "projectMatrix");
-
+//        GLES20.glClear(GLES20.GL_DEPTH_BUFFER_BIT);
+        GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
         GLES20.glVertexAttribPointer(positionHandle, COORDS_PER_VERTEX,
                 GLES20.GL_FLOAT, false,
                 vertexStride, vertexBuffer);
@@ -148,6 +189,6 @@ public class Coordinate implements Shape {
 
     @Override
     public void setUpProjectMatrix(float[] projectMatrix) {
-        GLES20.glUniformMatrix4fv(projectMatrixIndex, 1, false, projectMatrix, 0);
+        //GLES20.glUniformMatrix4fv(projectMatrixIndex, 1, false, projectMatrix, 0);
     }
 }

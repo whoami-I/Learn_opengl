@@ -80,6 +80,14 @@ public class Coordinate implements Shape {
             0, 1, 0, 0, 1, 0, 1, 1,
     };
 
+    float[] modelMatrix = new float[]{
+            1, 0, 0, 0,
+            0, 1, 0, 0,
+            0, 0, 1, 0,
+            0, 0, 0, 1,
+    };
+
+
     public Coordinate(Context context) {
         mProgram = GLHelper.makeProgram(vertexShaderCode, fragmentShaderCode);
 
@@ -113,13 +121,8 @@ public class Coordinate implements Shape {
         projectMatrixIndex = GLHelper.getUniform(mProgram, "projectMatrix");
         modelMatrixIndex = GLHelper.getUniform(mProgram, "modelMatrix");
         viewMatrixIndex = GLHelper.getUniform(mProgram, "viewMatrix");
-        float[] modelMatrix = new float[]{
-                1, 0, 0, 0,
-                0, 1, 0, 0,
-                0, 0, 1, 0,
-                0, 0, 0, 1,
-        };
-        Matrix.rotateM(modelMatrix, 0, 180.0f, 1.0f, 0.0f, 0.0f);
+
+//        Matrix.rotateM(modelMatrix, 0, 180.0f, 1.0f, 0.0f, 0.0f);
 //        Matrix.translateM(modelMatrix,0,0.2f,0.2f,0);
 //        Matrix.scaleM(modelMatrix,0,2,2,2);
         GLES20.glUniformMatrix4fv(modelMatrixIndex, 1, false, modelMatrix, 0);
@@ -136,14 +139,14 @@ public class Coordinate implements Shape {
     @Override
     public void onSizeChange(int width, int height) {
         float[] projectMatrix = new float[]{
-                1, 0, 0, 0,
+                0, 0, 4, 0,
+                0, 0, 0, 0,
                 0, 1, 0, 0,
-                0, 0, 1, 0,
                 0, 0, 0, 1,
         };
         float ratio = ((float) height) / width;
         Matrix.orthoM(projectMatrix, 0, -1, 1,
-                -ratio, ratio, -1.0f, 1.0f);
+                -ratio, ratio, -10.0f, 100.0f);
 //        Matrix.perspectiveM(projectMatrix,0,45.0f,ratio,0.1f,100.0f);
         GLES20.glUniformMatrix4fv(projectMatrixIndex, 1, false, projectMatrix, 0);
     }
@@ -158,14 +161,6 @@ public class Coordinate implements Shape {
 
     @Override
     public void draw() {
-
-//        int colorHandle = GLHelper.getAttr(mProgram, "a_color");
-//        GLES20.glEnableVertexAttribArray(colorHandle);
-//        GLES20.glVertexAttribPointer(colorHandle, COORDS_PER_VERTEX,
-//                GLES20.GL_FLOAT, false,
-//                4 * 4, colorBuffer);
-
-//        GLES20.glClear(GLES20.GL_DEPTH_BUFFER_BIT);
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
         GLES20.glVertexAttribPointer(positionHandle, COORDS_PER_VERTEX,
                 GLES20.GL_FLOAT, false,
@@ -182,6 +177,8 @@ public class Coordinate implements Shape {
         GLES20.glActiveTexture(GLES20.GL_TEXTURE1);
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureBean2.textureId);
         GLES20.glUniform1i(uTextureUnitLocation, 1);
+
+        GLES20.glUniformMatrix4fv(modelMatrixIndex, 1, false, modelMatrix, 0);
         // Draw the triangle
         GLES20.glDrawArrays(GLES20.GL_TRIANGLE_FAN, 0, vertexCount);
 
@@ -190,5 +187,12 @@ public class Coordinate implements Shape {
     @Override
     public void setUpProjectMatrix(float[] projectMatrix) {
         //GLES20.glUniformMatrix4fv(projectMatrixIndex, 1, false, projectMatrix, 0);
+    }
+
+    @Override
+    public void move(float x, float y) {
+        Matrix.rotateM(modelMatrix, 0, 180.0f*x/320, 0.0f, 1.0f, 0.0f);
+        Matrix.rotateM(modelMatrix, 0, y*180/320.f, 1.0f, 0.0f, 0.0f);
+        GLES20.glUniformMatrix4fv(modelMatrixIndex, 1, false, modelMatrix, 0);
     }
 }

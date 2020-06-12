@@ -10,7 +10,7 @@ import com.example.learn_opengl.filter.Filter;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
-public class MyRender implements GLSurfaceView.Renderer {
+public class MyRender implements GLSurfaceView.Renderer, MySurfaceView.MoveCallback {
 
     private Context mContext;
     private Shape shape;
@@ -46,7 +46,7 @@ public class MyRender implements GLSurfaceView.Renderer {
                 -ratio, ratio, 0, 1);
 //        Matrix.perspectiveM(mProjectionMatrix,0,45,ratio,0.1f,100.0f);
         shape.setUpProjectMatrix(mProjectionMatrix);
-        shape.onSizeChange(width,height);
+        shape.onSizeChange(width, height);
     }
 
     @Override
@@ -65,5 +65,10 @@ public class MyRender implements GLSurfaceView.Renderer {
         GLES20.glCompileShader(shader);
 
         return shader;
+    }
+
+    @Override
+    public void move(float x, float y) {
+        shape.move(x, y);
     }
 }

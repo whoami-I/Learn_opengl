@@ -1,0 +1,7 @@
+1.mvp矩阵的含义以及写法
+    m：model，即物体坐标系，一般在这个坐标系里面做物体的旋转/平移/缩放
+    v：view，眼睛坐标系，即从哪个方位去看
+    p：投影坐标，
+三个矩阵的实际顺序是pvm
+在转动model的时候，如果想要其他地方可见的话，需要在draw的开始调用：
+GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);

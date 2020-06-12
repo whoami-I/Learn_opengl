@@ -10,14 +10,16 @@ import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 public class MainActivity extends AppCompatActivity {
-    GLSurfaceView glSurfaceView;
+    MySurfaceView glSurfaceView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         glSurfaceView = findViewById(R.id.surface_view);
         glSurfaceView.setEGLContextClientVersion(2);
-        glSurfaceView.setRenderer(new MyRender(getApplicationContext()));
+        MyRender myRender = new MyRender(getApplicationContext());
+        glSurfaceView.setRenderer(myRender);
+        glSurfaceView.setCallback(myRender);
         glSurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
     }
 

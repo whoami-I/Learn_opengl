@@ -5,4 +5,5 @@ public interface Shape {
     void setUpProjectMatrix(float [] projectMatrix);
     default void onCreate(){}
     default void onSizeChange(int width,int height){}
+    default void move(float x,float y){}
 }

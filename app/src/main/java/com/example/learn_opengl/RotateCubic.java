@@ -262,17 +262,17 @@ public class RotateCubic implements Shape {
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureBean.textureId);
         GLES20.glUniform1i(uTextureUnitLocation, 0);
 
-        if (x > 0 && y > 0) {
-            y = -y;
-        } else if (x <= 0 && y > 0) {
-            x = -x;
-            distance = -distance;
-        } else if (x > 0 && y < 0) {
-            y = -y;
-        } else if (x <= 0 && y < 0) {
-            y = -y;
-        }
-//        y = -y;
+//        if (x > 0 && y > 0) {
+//            y = -y;
+//        } else if (x <= 0 && y > 0) {
+//            x = -x;
+//            distance = -distance;
+//        } else if (x > 0 && y < 0) {
+//            y = -y;
+//        } else if (x <= 0 && y < 0) {
+//            y = -y;
+//        }
+        y = -y;
         tmp = new float[]{
                 1, 0, 0, 0,
                 0, 1, 0, 0,

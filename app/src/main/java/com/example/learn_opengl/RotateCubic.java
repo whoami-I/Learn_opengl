@@ -179,7 +179,7 @@ public class RotateCubic implements Shape {
         mProgram = GLHelper.makeProgram(vertexShaderCode, fragmentShaderCode);
 
         GLES20.glEnable(GLES20.GL_DEPTH_TEST);
-        GLES20.glClearDepthf(1.0f);
+//        GLES20.glClearDepthf(1.0f);
         vertexBuffer = GLHelper.createFloatBuffer(vertex1);
         indexBuffer = GLHelper.createShortBuffer(indice);
         positionHandle = GLHelper.getAttr(mProgram, "vPosition");
@@ -199,8 +199,7 @@ public class RotateCubic implements Shape {
 
         aTexCoordLocation = GLHelper.getAttr(mProgram, "a_TexCoord");
         uTextureUnitLocation = GLHelper.getUniform(mProgram, "u_TextureUnit");
-        textureBean = GLHelper.loadTexture(context, R.drawable.pikachu);
-        textureBean2 = GLHelper.loadTexture(context, R.drawable.tuzki);
+        textureBean = GLHelper.loadTexture(context, R.drawable.board_texture);
 //        // 开启纹理透明混合，这样才能绘制透明图片
 
         projectMatrixIndex = GLHelper.getUniform(mProgram, "projectMatrix");
@@ -231,7 +230,7 @@ public class RotateCubic implements Shape {
         };
         float ratio = ((float) height) / width;
         Matrix.orthoM(projectMatrix, 0, -1, 1,
-                -ratio, ratio, -10.0f, 100.0f);
+                -ratio, ratio, -10.0f, 10.0f);
 //        Matrix.perspectiveM(projectMatrix,0,45.0f,ratio,0.1f,100.0f);
         GLES20.glUniformMatrix4fv(projectMatrixIndex, 1, false, projectMatrix, 0);
     }
@@ -243,7 +242,12 @@ public class RotateCubic implements Shape {
     int projectMatrixIndex;
     int modelMatrixIndex;
     int viewMatrixIndex;
-
+    float[] tmp = new float[]{
+            1, 0, 0, 0,
+            0, 1, 0, 0,
+            0, 0, 1, 0,
+            0, 0, 0, 1,
+    };
     @Override
     public void draw() {
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
@@ -253,7 +257,6 @@ public class RotateCubic implements Shape {
         GLES20.glEnableVertexAttribArray(positionHandle);
         GLES20.glVertexAttribPointer(aTexCoordLocation, 2, GLES20.GL_FLOAT, false, 0, texture_buffer);
         GLES20.glEnableVertexAttribArray(aTexCoordLocation);
-
 
         GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureBean.textureId);
@@ -269,9 +272,20 @@ public class RotateCubic implements Shape {
         } else if (x <= 0 && y < 0) {
             y = -y;
         }
-//        y=-y;
+//        y = -y;
+        tmp = new float[]{
+                1, 0, 0, 0,
+                0, 1, 0, 0,
+                0, 0, 1, 0,
+                0, 0, 0, 1,
+        };
         if (distance != 0) {
-            Matrix.rotateM(modelMatrix, 0, distance, -y, x, 0.0f);
+//            Matrix.multiplyMV(r, 0, modelMatrix, 0, v, 0);
+
+//            Matrix.rotateM(modelMatrix, 0, distance / 3.0f, r[0], r[1], r[2]);
+            Matrix.rotateM(tmp, 0, distance / 3.0f, -y, x, 0);
+            Matrix.multiplyMM(tmp, 0, tmp, 0, modelMatrix, 0);
+            modelMatrix = tmp;
         }
         GLES20.glUniformMatrix4fv(modelMatrixIndex, 1, false, modelMatrix, 0);
         // Draw the triangle

@@ -10,6 +10,7 @@ import android.util.Log;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
+import java.nio.ShortBuffer;
 
 public class GLHelper {
 
@@ -20,6 +21,16 @@ public class GLHelper {
                 fs.length * 4);
         bb.order(ByteOrder.nativeOrder());
         FloatBuffer buffer = bb.asFloatBuffer();
+        buffer.put(fs);
+        buffer.position(0);
+        return buffer;
+    }
+
+    public static ShortBuffer createShortBuffer(short[] fs) {
+        ByteBuffer bb = ByteBuffer.allocateDirect(
+                fs.length * 2);
+        bb.order(ByteOrder.nativeOrder());
+        ShortBuffer buffer = bb.asShortBuffer();
         buffer.put(fs);
         buffer.position(0);
         return buffer;

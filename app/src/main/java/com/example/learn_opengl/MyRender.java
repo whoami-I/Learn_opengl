@@ -33,7 +33,7 @@ public class MyRender implements GLSurfaceView.Renderer, MySurfaceView.MoveCallb
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
         GLES20.glClearColor(1, 1, 1, 1);
-        shape = new LightRotateCubic(mContext);
+        shape = new Triangle(mContext);
         shape.setUpProjectMatrix(mProjectionMatrix);
         shape.onCreate();
     }

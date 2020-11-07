@@ -2,6 +2,7 @@ package com.example.learn_opengl
 
 class EGLThread constructor(surfaceView: EGLSurfaceView) : Thread() {
 
+    private var mOnPause: Boolean = false
     var surfaceView: EGLSurfaceView = surfaceView
     val lock: Any = Any() //可能导致主线程的阻塞，如何解囧？
     var needExit = false
@@ -22,7 +23,7 @@ class EGLThread constructor(surfaceView: EGLSurfaceView) : Thread() {
                 hasInitEGL = true
                 eglHelper.initEnv()
             }
-            if (hasSurface && hasInitEGL) {
+            if (hasSurface && hasInitEGL && !mOnPause) {
                 if (hasInitEGL && !hasCreateSurface) {
                     eglHelper.createSurface()
                     hasCreateSurface = true
@@ -37,8 +38,14 @@ class EGLThread constructor(surfaceView: EGLSurfaceView) : Thread() {
                 if (width > 0 && height > 0) {
                     surfaceView?.renderer?.onDrawFrame(null)
                 }
-                eglHelper.swap()
-//            sleep(16)
+                synchronized(lock){
+                    if(!mOnPause){
+                        eglHelper.swap()
+                    }else{
+                        hasCreateSurface = false
+                    }
+                }
+                sleep(16)
             }
         }
     }
@@ -60,6 +67,18 @@ class EGLThread constructor(surfaceView: EGLSurfaceView) : Thread() {
     fun surfaceCreate() {
         synchronized(lock) {
             hasSurface = true
+        }
+    }
+
+    fun onPause() {
+        synchronized(lock){
+            mOnPause = true
+        }
+    }
+
+    fun onResume() {
+        synchronized(lock){
+            mOnPause = false
         }
     }
 }

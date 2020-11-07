@@ -72,6 +72,12 @@ class EglHelper constructor(surfaceView: EGLSurfaceView) {
     fun createSurface(){
         //创建可显示的Surface
 
+        if(eglGetDisplay!=null && eglSurface!=null){
+            EGL14.eglMakeCurrent(eglGetDisplay, EGL14.EGL_NO_SURFACE,
+                    EGL14.EGL_NO_SURFACE,
+                    EGL14.EGL_NO_CONTEXT)
+            EGL14.eglDestroySurface(eglGetDisplay,eglSurface)
+        }
         val surfaceAttribs = intArrayOf(EGL_NONE)
 
         eglSurface = EGL14.eglCreateWindowSurface(eglGetDisplay, mEglConfig, surfaceView.holder.surface, surfaceAttribs, 0)

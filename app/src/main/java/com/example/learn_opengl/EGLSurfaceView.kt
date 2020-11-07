@@ -40,6 +40,14 @@ class EGLSurfaceView : SurfaceView, SurfaceHolder.Callback2 {
         eglThread?.requestExit()
     }
 
+    public fun onPause() {
+        eglThread?.onPause()
+    }
+
+    public fun onResume(){
+        eglThread?.onResume()
+    }
+
     override fun surfaceRedrawNeeded(holder: SurfaceHolder?) {
     }
 

@@ -20,4 +20,14 @@ class EGLActivity :AppCompatActivity(){
             surface_view.setRender(MyRender(this.applicationContext))
 //        },5000)
     }
+
+    override fun onPause() {
+        super.onPause()
+        surface_view.onPause()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        surface_view.onResume()
+    }
 }

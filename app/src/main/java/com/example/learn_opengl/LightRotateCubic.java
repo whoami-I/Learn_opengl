@@ -58,7 +58,7 @@ public class LightRotateCubic implements Shape {
                     "    float specularStrength = 0.5;\n" +
                     "    vec3 viewDir = normalize(viewPos - fragPos);\n" +
                     "    vec3 reflectDir = reflect(-lightDir, unitNormal);\n" +
-                    "    float spec = pow(max(dot(unitNormal, reflectDir), 0.0), 16.0);\n" +
+                    "    float spec = pow(max(dot(viewDir, reflectDir), 0.0), 16.0);\n" +
                     "    specular = specularStrength * spec * lightColor;\n" +
                     "}";
 
@@ -322,7 +322,7 @@ public class LightRotateCubic implements Shape {
     }
     float [] lightColor = new float[]{1.0f, 1.0f, 1.0f};
     float [] lightDir = new float[]{-2.0f, 0.0f, 2.0f};
-    float [] viewDir = new float[]{-3.0f, 0.0f, 3.0f};
+    float [] viewDir = new float[]{-2.0f, 0.0f, 2.0f};
 
     @Override
     public void setUpProjectMatrix(float[] projectMatrix) {
